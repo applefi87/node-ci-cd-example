@@ -1,5 +1,5 @@
-# Use Node.js base image
-FROM node:16
+# Use Node.js official image as a base
+FROM node:18-alpine
 
 # Set the working directory
 WORKDIR /usr/src/app
@@ -10,11 +10,11 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install --production
 
-# Copy the rest of the application code
+# Copy the rest of the application
 COPY . .
 
-# Expose the port on which your app will run
+# Expose the port the app runs on
 EXPOSE 3000
 
-# Start the Node.js application
-CMD ["npm", "start"]
+# Define the command to run the app
+CMD ["node", "index.js"]
