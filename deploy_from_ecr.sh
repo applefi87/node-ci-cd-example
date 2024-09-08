@@ -26,24 +26,8 @@ docker run -d --name my-node-app -p 80:3000 $ECR_URL/my-node-app:latest
 # Ensure NGINX is installed and running
 if ! systemctl is-active --quiet nginx; then
     echo "Starting NGINX..."
-    sudo systemctl start nginx
-    
-    # Check if NGINX started successfully
-    if systemctl is-active --quiet nginx; then
-        echo "NGINX started successfully."
-    else
-        echo "Failed to start NGINX. Please check the logs with 'journalctl -xeu nginx.service'."
-        exit 1  # Exit with an error status if NGINX failed to start
-    fi
-else
-    echo "NGINX is already running, restarting it to apply any changes..."
     sudo systemctl restart nginx
-
-    # Check if NGINX restarted successfully
-    if systemctl is-active --quiet nginx; then
-        echo "NGINX restarted successfully."
-    else
-        echo "Failed to restart NGINX. Please check the logs with 'journalctl -xeu nginx.service'."
-        exit 1  # Exit with an error status if NGINX failed to restart
-    fi
+else
+    echo "NGINX is already running."
 fi
+
