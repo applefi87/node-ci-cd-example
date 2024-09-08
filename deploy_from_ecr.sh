@@ -18,4 +18,11 @@ docker rm my-node-app || true
 # Run the new container
 docker run -d --name my-node-app -p 80:3000 $ECR_URL/my-node-app:latest
 
-sudo sudo systemctl reload nginx
+# Ensure NGINX is installed and running
+if ! systemctl is-active --quiet nginx; then
+    echo "Starting NGINX..."
+    sudo systemctl start nginx
+else
+    echo "NGINX is already running."
+fi
+
