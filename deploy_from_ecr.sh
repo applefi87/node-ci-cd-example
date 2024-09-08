@@ -23,11 +23,6 @@ fi
 # Run the new container
 docker run -d --name my-node-app -p 80:3000 $ECR_URL/my-node-app:latest
 
-# Ensure NGINX is installed and running
-if ! systemctl is-active --quiet nginx; then
-    echo "Starting NGINX..."
-    sudo systemctl restart nginx
-else
-    echo "NGINX is already running."
-fi
-
+echo "Ensuring NGINX is active..."
+sudo systemctl restart nginx
+echo "NGINX has been restarted."
