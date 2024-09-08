@@ -18,6 +18,4 @@ docker rm my-node-app || true
 # Run the new container
 docker run -d --name my-node-app -p 80:3000 $ECR_URL/my-node-app:latest
 
-# Replace NGINX config to point to new container if needed and reload NGINX
-sudo cp /etc/nginx/nginx.conf /etc/nginx/nginx.conf
-sudo systemctl reload nginx
+sudo sudo systemctl reload nginx
