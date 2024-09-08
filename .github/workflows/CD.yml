@@ -12,22 +12,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      
-      - name: Set up SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-add ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-
-      - name: Deploy to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} "bash -s" < ./deploy_from_ecr.sh
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          EC2_HOST: ${{ secrets.EC2_HOST }}
+      - name: Deploy to EC2 using SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }} # Add your EC2 public IP to GitHub Secrets
+          username: ubuntu
+          key: ${{ secrets.EC2_PRIVATE_KEY }} # Add your private SSH key to GitHub Secrets
+          envs:
+            AWS_REGION: ${{ secrets.AWS_REGION }} # Add your AWS region to GitHub Secrets
+            AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }} # Add your AWS Account ID to GitHub Secrets
+          script: |
+            cd /path/to/your/scripts
+            chmod +x ./deploy_from_ecr.sh
+            ./deploy_from_ecr.sh
