@@ -1,25 +1,55 @@
 #!/bin/bash
+set -x
+
+echo "Starting build and push process..."
+
 # ECR repo variables
 AWS_REGION="${AWS_REGION:-ap-northeast-1}"  # Default to ap-northeast-1 if not set
 AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}" 
 ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
+# Log the AWS and ECR variables to check if they're correct
+echo "AWS Region: $AWS_REGION"
+echo "AWS Account ID: $AWS_ACCOUNT_ID"
+echo "ECR URL: $ECR_URL"
+
 # Authenticate Docker to your ECR
+echo "Authenticating Docker with ECR..."
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
-
-# Build Docker image
-docker build -t my-app .
-
-# Tag the Docker image
-docker tag my-app:latest $ECR_URL:latest
-
-# Push to ECR
-docker push $ECR_URL:latest
-
-# For PRs, add a step to run tests (example):
-if [ "$1" == "pr" ]; then
-    docker run --rm -d --name test-container my-app:latest
-    # Perform test actions here (health checks, etc.)
-    docker stop test-container
-    docker rm test-container
+LOGIN_STATUS=$?
+if [ $LOGIN_STATUS -ne 0 ]; then
+  echo "Docker login to ECR failed!" >&2
+  exit 1
 fi
+# Build the Docker image
+echo "Building Docker image..."
+docker build -t my-app .
+BUILD_STATUS=$?
+if [ $BUILD_STATUS -ne 0 ]; then
+  echo "Docker build failed!" >&2
+  exit 1
+fi
+
+# Tag the Docker image with ECR URL
+echo "Tagging Docker image..."
+docker tag my-app:latest $ECR_URL:latest
+TAG_STATUS=$?
+if [ $TAG_STATUS -ne 0 ]; then
+  echo "Docker tag failed!" >&2
+  exit 1
+fi
+
+# Push the image to ECR
+echo "Pushing Docker image to ECR..."
+docker push $ECR_URL:latest
+PUSH_STATUS=$?
+if [ $PUSH_STATUS -ne 0 ]; then
+  echo "Docker push to ECR failed!" >&2
+  exit 1
+fi
+
+# Log successful completion
+echo "Build and push process completed successfully!"
+
+# Disable command tracing after the critical part
+set +x
