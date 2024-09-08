@@ -36,5 +36,14 @@ if ! systemctl is-active --quiet nginx; then
         exit 1  # Exit with an error status if NGINX failed to start
     fi
 else
-    echo "NGINX is already running."
+    echo "NGINX is already running, restarting it to apply any changes..."
+    sudo systemctl restart nginx
+
+    # Check if NGINX restarted successfully
+    if systemctl is-active --quiet nginx; then
+        echo "NGINX restarted successfully."
+    else
+        echo "Failed to restart NGINX. Please check the logs with 'journalctl -xeu nginx.service'."
+        exit 1  # Exit with an error status if NGINX failed to restart
+    fi
 fi
