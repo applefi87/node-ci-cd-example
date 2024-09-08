@@ -1,30 +1,21 @@
 name: CD Pipeline
 
 on:
-  workflow_dispatch:
-    inputs:
-      deployType:
-        description: 'Type of Deployment (Internal or External)'
-        required: true
-        default: 'Internal'
+  push:
+    branches:
+      - main
 
 jobs:
   deploy:
-    runs-on: [self-hosted, login]
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Deploy to EC2 (Conditional)
+      - name: Deploy to EC2
         run: |
-          if [ "${{ github.event.inputs.deployType }}" == "Internal" ]; then
-            echo "Deploying Internal"
-            ./deploy_from_ecr_internal.sh
-          else
-            echo "Deploying External"
-            ./deploy_from_ecr_external.sh
-          fi
+          ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-instance-ip "bash -s" < ./deploy_from_ecr.sh
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
