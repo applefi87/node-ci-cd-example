@@ -24,6 +24,9 @@ jobs:
       - name: Run tests
         run: npm test  # Modify as per your testing setup
 
+      - name: Make deploy script executable
+        run: chmod +x ./build_and_push.sh
+
       - name: Run build_and_push script
         run: ./build_and_push.sh pr
         env:
