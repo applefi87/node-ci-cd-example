@@ -15,7 +15,7 @@ jobs:
 
       - name: Deploy to EC2
         run: |
-          ssh -o StrictHostKeyChecking=no ec2-user@your-ec2-instance-ip "bash -s" < ./deploy_from_ecr.sh
+          ssh -o StrictHostKeyChecking=no ec2-user@${{ secrets.EC2_HOST }} "bash -s" < ./deploy_from_ecr.sh
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
