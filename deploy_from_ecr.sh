@@ -16,7 +16,7 @@ docker stop my-node-app || true
 docker rm my-node-app || true
 
 # Run the new container
-docker run -d --name my-node-app:latest -p 80:3000 $ECR_URL/my-node-app:latest
+docker run -d --name my-node-app -p 80:3000 $ECR_URL/my-node-app:latest
 
 # Ensure NGINX is installed and running
 if ! systemctl is-active --quiet nginx; then
