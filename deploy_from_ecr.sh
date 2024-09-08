@@ -1,7 +1,6 @@
 #!/bin/bash
+
 # ECR repo variables
-export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 AWS_REGION="${AWS_REGION:-ap-northeast-1}"  # Default to ap-northeast-1 if not set
 AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}"
 ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
