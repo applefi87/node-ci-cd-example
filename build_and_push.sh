@@ -8,11 +8,6 @@ AWS_REGION="${AWS_REGION:-ap-northeast-1}"  # Default to ap-northeast-1 if not s
 AWS_ACCOUNT_ID="${AWS_ACCOUNT_ID}" 
 ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
-# Log the AWS and ECR variables to check if they're correct
-echo "AWS Region: $AWS_REGION"
-echo "AWS Account ID: $AWS_ACCOUNT_ID"
-echo "ECR URL: $ECR_URL"
-
 # Authenticate Docker to your ECR
 echo "Authenticating Docker with ECR..."
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
@@ -32,7 +27,7 @@ fi
 
 # Tag the Docker image with ECR URL
 echo "Tagging Docker image..."
-docker tag my-app:latest $ECR_URL:latest
+docker tag my-app:latest $ECR_URL/my-app:latest
 TAG_STATUS=$?
 if [ $TAG_STATUS -ne 0 ]; then
   echo "Docker tag failed!" >&2
@@ -41,7 +36,7 @@ fi
 
 # Push the image to ECR
 echo "Pushing Docker image to ECR..."
-docker push $ECR_URL:latest
+docker push $ECR_URL/my-app:latest
 PUSH_STATUS=$?
 if [ $PUSH_STATUS -ne 0 ]; then
   echo "Docker push to ECR failed!" >&2
