@@ -11,9 +11,14 @@ ECR_URL="$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_URL
 docker pull $ECR_URL/my-node-app:latest
 
-# Stop and remove the old container (if it exists)
-docker stop my-node-app || true
-docker rm my-node-app || true
+# Check if the container is running and stop/remove it if it exists
+if [ "$(docker ps -aq -f name=my-node-app)" ]; then
+    echo "Stopping and removing existing container..."
+    docker stop my-node-app
+    docker rm my-node-app
+else
+    echo "No existing container found. Proceeding to start a new one."
+fi
 
 # Run the new container
 docker run -d --name my-node-app -p 80:3000 $ECR_URL/my-node-app:latest
@@ -22,7 +27,14 @@ docker run -d --name my-node-app -p 80:3000 $ECR_URL/my-node-app:latest
 if ! systemctl is-active --quiet nginx; then
     echo "Starting NGINX..."
     sudo systemctl start nginx
+    
+    # Check if NGINX started successfully
+    if systemctl is-active --quiet nginx; then
+        echo "NGINX started successfully."
+    else
+        echo "Failed to start NGINX. Please check the logs with 'journalctl -xeu nginx.service'."
+        exit 1  # Exit with an error status if NGINX failed to start
+    fi
 else
     echo "NGINX is already running."
 fi
-
