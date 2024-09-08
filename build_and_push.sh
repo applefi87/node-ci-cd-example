@@ -18,7 +18,7 @@ if [ $LOGIN_STATUS -ne 0 ]; then
 fi
 # Build the Docker image
 echo "Building Docker image..."
-docker build -t my-app .
+docker build -t my-node-app .
 BUILD_STATUS=$?
 if [ $BUILD_STATUS -ne 0 ]; then
   echo "Docker build failed!" >&2
@@ -27,7 +27,7 @@ fi
 
 # Tag the Docker image with ECR URL
 echo "Tagging Docker image..."
-docker tag my-app:latest $ECR_URL/my-app:latest
+docker tag my-node-app:latest $ECR_URL/my-node-app:latest
 TAG_STATUS=$?
 if [ $TAG_STATUS -ne 0 ]; then
   echo "Docker tag failed!" >&2
@@ -36,7 +36,7 @@ fi
 
 # Push the image to ECR
 echo "Pushing Docker image to ECR..."
-docker push $ECR_URL/my-app:latest
+docker push $ECR_URL/my-node-app:latest
 PUSH_STATUS=$?
 if [ $PUSH_STATUS -ne 0 ]; then
   echo "Docker push to ECR failed!" >&2
